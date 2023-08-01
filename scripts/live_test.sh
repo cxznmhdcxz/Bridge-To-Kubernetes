@@ -1,4 +1,5 @@
 #!/bin/bash
+export LANG=C.UTF-8
 set -ef
 
 stop_b2k() {
