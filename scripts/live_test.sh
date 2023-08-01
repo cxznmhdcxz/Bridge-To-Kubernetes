@@ -133,7 +133,9 @@ start_live_test() {
 
     dotnet_publish_for_b2k
     set_up_stats_api
-    start_minikube_tunnel
+    if [ "$RUNNER_OS" == "Linux" ]; then
+        start_minikube_tunnel
+    fi
     #set bridge as dev environment to run live test because some of image tags might noe be available in production
     export BRIDGE_ENVIRONMENT='dev'
     start_b2k
