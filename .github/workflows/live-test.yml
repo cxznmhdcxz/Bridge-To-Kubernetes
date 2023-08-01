@@ -20,29 +20,13 @@ jobs:
     #     inlineScript: |
     #       Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
     #     azPSVersion: '3.1.0'
-    # - name: Start minikube for windows 
-    #   if: ${{ matrix.os == 'windows-latest' }}
-    #   uses: medyagh/setup-minikube@c8adc427cd854219da7bdea2f5fce5d23c89512a
-    #   with:
-    #    driver: virtualbox
-    - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-      uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
-        enable-AzPSSession: true
     - name: Create AKS for Windows
       if: ${{ matrix.os == 'windows-latest' }}
       uses: Azure/powershell@v1
       with:
         inlineScript: |
-          get-azresource -resourcegroupname ConnectTesting
-        # inlineScript: |
-        # "New-AzAksCluster -ResourceGroupName ruihrg -Name ruihcluster02 -NodeCount 1 -GenerateSshKey"
-        #   az account show
-        #   az account set -s "Mindaro Testing"
-        #   az aks create -n ruih-test0801 -g ConnectTesting
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az resource list -g ${{ secrets.AZURE_RESOURCE_GROUP }}
         azPSVersion: '3.1.0'
     # - name: Start minikube for ubuntu 
     #   if: ${{ matrix.os == 'ubuntu-latest' }}
