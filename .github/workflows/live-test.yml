@@ -25,45 +25,53 @@ jobs:
       uses: Azure/login@v1
       with:
         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+    # todo: create AKS
     - name: Create AKS for Windows
       if: ${{ matrix.os == 'windows-latest' }}
-      uses: azure/CLI@v1
+      uses: Azure/powershell@v1
       with:
         inlineScript: |
           az resource list -g ${{ secrets.AZURE_RESOURCE_GROUP }}
-    # - name: Start minikube for ubuntu 
-    #   if: ${{ matrix.os == 'ubuntu-latest' }}
-    #   uses: medyagh/setup-minikube@c8adc427cd854219da7bdea2f5fce5d23c89512a
-    #   with:
-    #    driver: docker
-    # - name: create todo-app namespace
-    #   run: kubectl create namespace todo-app
-    # - name: Deploy todo-app
-    #   run:
-    #     kubectl apply -f ./samples/todo-app/deployment.yaml -n todo-app
-    # - name: Wait for pods to be ready
-    #   run: |
-    #     kubectl wait --for=condition=ready pod --all -n todo-app --timeout=300s
-    #     kubectl get pods -n todo-app
-    # - name: Publish and test
-    #   timeout-minutes: 10
-    #   shell: bash
-    #   run: |
-    #    echo "RUNNER OS IS: $RUNNER_OS"
-    #    if [ "$RUNNER_OS" == "Linux" ]; then
-    #     chmod +x scripts/live_test.sh
-    #     RUN_TIME=linux-x64
-    #    elif [ "$RUNNER_OS" == "Windows" ]; then
-    #     RUN_TIME=win-x64
-    #    else
-    #     chmod +x scripts/live_test.sh
-    #     RUN_TIME=osx-x64
-    #    fi
-    #    ./scripts/live_test.sh $RUN_TIME
-    # - name: verify if B2K disconnected successfully
-    #   shell: bash
-    #   run: |
-    #     if [ "$RUNNER_OS" != "Windows" ]; then
-    #       chmod +x scripts/verify.sh
-    #     fi
-    #     ./scripts/verify.sh
+        azPSVersion: '3.1.0'
+    - name: Set AKS Context for Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        cluster-name: testworkflow-aks
+    - name: Start minikube for ubuntu 
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      uses: medyagh/setup-minikube@c8adc427cd854219da7bdea2f5fce5d23c89512a
+      with:
+       driver: docker
+    - name: create todo-app namespace
+      run: kubectl create namespace todo-app
+    - name: Deploy todo-app
+      run:
+        kubectl apply -f ./samples/todo-app/deployment.yaml -n todo-app
+    - name: Wait for pods to be ready
+      run: |
+        kubectl wait --for=condition=ready pod --all -n todo-app --timeout=300s
+        kubectl get pods -n todo-app
+    - name: Publish and test
+      timeout-minutes: 10
+      shell: bash
+      run: |
+       echo "RUNNER OS IS: $RUNNER_OS"
+       if [ "$RUNNER_OS" == "Linux" ]; then
+        chmod +x scripts/live_test.sh
+        RUN_TIME=linux-x64
+       elif [ "$RUNNER_OS" == "Windows" ]; then
+        RUN_TIME=win-x64
+       else
+        chmod +x scripts/live_test.sh
+        RUN_TIME=osx-x64
+       fi
+       ./scripts/live_test.sh $RUN_TIME
+    - name: verify if B2K disconnected successfully
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" != "Windows" ]; then
+          chmod +x scripts/verify.sh
+        fi
+        ./scripts/verify.sh
