@@ -30,7 +30,8 @@ jobs:
       uses: Azure/powershell@v1
       with:
         inlineScript: |
-          az account set -s "Mindaro Testing"
+          az account show
+          az account set -s "c2e0f009-a61a-4578-8a6d-5715ee782648"
           az aks create -n ruih-test0801 -g ConnectTesting
         azPSVersion: '3.1.0'
     - name: Start minikube for ubuntu 
