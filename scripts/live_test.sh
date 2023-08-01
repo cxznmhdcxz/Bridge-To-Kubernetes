@@ -17,7 +17,11 @@ validate_b2k_is_running() {
     echo "evaluating curl response after b2k debugging"
     check_if_restore_pod_exists
     validate_restore_pod_status
-    CURL_OUTPUT=$(curl -s -w "%{http_code}" $(minikube service frontend -n todo-app --url)/api/stats)
+    if [ "$RUNNER_OS" == "Linux" ]; then
+        CURL_OUTPUT=$(curl -s -w "%{http_code}" $(minikube service frontend -n todo-app --url)/api/stats)
+    else
+        CURL_OUTPUT=$(curl -s -w "%{http_code}" $(kubectl get service frontend -n todo-app -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/api/stats)
+    fi
     echo "curl response is:$CURL_OUTPUT"
     if [[ "$CURL_OUTPUT" =~ "200" ]]; then
         echo "B2K Debugging was successful"
