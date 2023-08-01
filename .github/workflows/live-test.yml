@@ -13,13 +13,13 @@ jobs:
     name: live test for b2k
     steps:
     - uses: actions/checkout@v2
-    - name: Enable hyperv for windows
-      if: ${{ matrix.os == 'windows-latest' }}
-      uses: Azure/powershell@v1
-      with:
-        inlineScript: |
-          Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
-        azPSVersion: '3.1.0'
+    # - name: Enable hyperv for windows
+    #   if: ${{ matrix.os == 'windows-latest' }}
+    #   uses: Azure/powershell@v1
+    #   with:
+    #     inlineScript: |
+    #       Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+    #     azPSVersion: '3.1.0'
     # - name: Start minikube for windows 
     #   if: ${{ matrix.os == 'windows-latest' }}
     #   uses: medyagh/setup-minikube@c8adc427cd854219da7bdea2f5fce5d23c89512a
@@ -30,9 +30,11 @@ jobs:
       uses: Azure/powershell@v1
       with:
         inlineScript: |
-          az account show
-          az account set -s "c2e0f009-a61a-4578-8a6d-5715ee782648"
-          az aks create -n ruih-test0801 -g ConnectTesting
+          "New-AzAksCluster -ResourceGroupName ruihrg -Name ruihcluster02 -NodeCount 1 -GenerateSshKey"
+        # inlineScript: |
+        #   az account show
+        #   az account set -s "Mindaro Testing"
+        #   az aks create -n ruih-test0801 -g ConnectTesting
         azPSVersion: '3.1.0'
     - name: Start minikube for ubuntu 
       if: ${{ matrix.os == 'ubuntu-latest' }}
