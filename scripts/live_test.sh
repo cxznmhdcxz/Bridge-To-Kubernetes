@@ -19,7 +19,7 @@ stop_b2k_windows() {
     echo "stopping b2k debugging via control port"
     curl -X POST http://localhost:51424/api/remoting/stop/
     echo "killing npm & node"
-    taskkill /im node.exe /f
+    taskkill/IM "node.exe" /F
     sleep5
 }
 
