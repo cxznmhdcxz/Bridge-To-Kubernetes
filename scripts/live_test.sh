@@ -8,9 +8,19 @@ stop_b2k() {
     echo "killing npm & node"
     sudo kill -9 $(ps aux | grep '\snode\s' | awk '{print $2}')
     sleep 5
-    echo "killing minikube tunnel"
-    kill $tunnelPID
-    sleep 5
+    if [ "$RUNNER_OS" == "Linux" ]; then
+        echo "killing minikube tunnel"
+        kill $tunnelPID
+        sleep 5
+    fi
+}
+
+stop_b2k_windows() {
+    echo "stopping b2k debugging via control port"
+    curl -X POST http://localhost:51424/api/remoting/stop/
+    echo "killing npm & node"
+    taskkill /im node.exe /f
+    sleep5
 }
 
 validate_b2k_is_running() {
@@ -147,7 +157,11 @@ start_live_test() {
 
     validate_b2k_is_running
 
-    stop_b2k
+    if [ "$RUNNER_OS" == "Windows" ]; then
+        stop_b2k_windows
+    else
+        stop_b2k
+    fi
 
     #ensure_b2k_is_disconnected
 
