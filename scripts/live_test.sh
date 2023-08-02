@@ -20,7 +20,7 @@ stop_b2k_windows() {
     curl -X POST http://localhost:51424/api/remoting/stop/
     echo "killing npm & node"
     taskkill -im "node.exe" -f
-    sleep5
+    sleep 5
 }
 
 validate_b2k_is_running() {
