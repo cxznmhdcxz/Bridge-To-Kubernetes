@@ -45,7 +45,7 @@ validate_b2k_is_running() {
 
 check_if_restore_pod_exists() {
     ## see if b2k pods are present
-    RESTORE_POD_NAME=$(kubectl get pods -n todo-app -o custom-columns=NAME:.metadata.name | grep -P "restore")
+    RESTORE_POD_NAME=$(kubectl get pods -n todo-app -o custom-columns=NAME:.metadata.name | grep -w "restore")
     echo "Restore Pod name is:$RESTORE_POD_NAME"
     if [ -z $RESTORE_POD_NAME ]; then
         echo "B2K restore pod is not found"
