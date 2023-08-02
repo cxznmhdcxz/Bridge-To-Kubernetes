@@ -8,24 +8,18 @@ jobs:
   liveTest:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest]
     runs-on: ${{ matrix.os }}
     name: live test for b2k
     steps:
     - uses: actions/checkout@v2
-    # - name: Enable hyperv for windows
-    #   if: ${{ matrix.os == 'windows-latest' }}
-    #   uses: Azure/powershell@v1
-    #   with:
-    #     inlineScript: |
-    #       Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
-    #     azPSVersion: '3.1.0'
-    - name: Login Azure Context for Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Login Azure Context
+      if: ${{ matrix.os != 'ubuntu-latest' }}
       uses: Azure/login@v1
       with:
         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
-    # todo: create AKS
+    # todo: actually create an AKS
     - name: Create AKS for Windows
       if: ${{ matrix.os == 'windows-latest' }}
       uses: Azure/powershell@v1
@@ -37,8 +31,17 @@ jobs:
       if: ${{ matrix.os == 'windows-latest' }}
       uses: azure/aks-set-context@v3
       with:
+        # todo: set to the actually created AKS
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
         cluster-name: testworkflow-aks
+    # todo: step:Create AKS for MacOS
+    - name: Set AKS Context for MacOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      uses: azure/aks-set-context@v3
+      with:
+        # todo: set to the actually created AKS
+        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        cluster-name: workflowtest-mac-aks
     - name: Start minikube for ubuntu 
       if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: medyagh/setup-minikube@c8adc427cd854219da7bdea2f5fce5d23c89512a
