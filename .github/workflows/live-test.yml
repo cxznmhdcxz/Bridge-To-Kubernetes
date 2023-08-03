@@ -1,14 +1,17 @@
 name: Live tests for B2K
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  repository_dispatch:
+    types: [ok-to-test-command]
 jobs:
   liveTest:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     name: live test for b2k
     steps:
