@@ -6,6 +6,8 @@ on:
     branches: [ "main", "workflow-checkpoint-1" ]
 jobs:
   liveTest:
+    env:
+      cluster-name: create-mac-1
     strategy:
       matrix:
         os: [macos-latest]
@@ -34,13 +36,19 @@ jobs:
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
         cluster-name: testworkflow-aks
     # todo: step:Create AKS for MacOS
+    - name: Create AKS mac
+      if: ${{ matrix.os == 'macos-latest' }}
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az aks create -g ConnectTesting -n $cluster-name
     - name: Set AKS Context for MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/aks-set-context@v3
       with:
         # todo: set to the actually created AKS
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        cluster-name: workflowtest-mac-aks
+        cluster-name: $cluster-name
     - name: Setup kubectl for macos-latest
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/setup-kubectl@v3
