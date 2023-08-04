@@ -25,7 +25,7 @@ jobs:
     - name: Create AKS for Windows
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $wincluster --generate-ssh-keys
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n ${{ env.wincluster }} --generate-ssh-keys
     - name: Set AKS Context for Windows
       if: ${{ matrix.os == 'windows-latest' }}
       uses: azure/aks-set-context@v3
@@ -36,7 +36,7 @@ jobs:
     - name: Create AKS mac
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $maccluster --generate-ssh-keys
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n ${{ env.maccluster }} --generate-ssh-keys
     - name: Set AKS Context for MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/aks-set-context@v3
