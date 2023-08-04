@@ -7,8 +7,8 @@ on:
 jobs:
   liveTest:
     env:
-      maccluster: create-mac-3
-      wincluster: create-win-3
+      maccluster: create-mac-4
+      wincluster: create-win-4
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
