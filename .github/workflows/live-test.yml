@@ -38,10 +38,8 @@ jobs:
     # todo: step:Create AKS for MacOS
     - name: Create AKS mac
       if: ${{ matrix.os == 'macos-latest' }}
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          az aks create -g ConnectTesting -n $cluster-name
+      run: |
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $cluster-name
     - name: Set AKS Context for MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/aks-set-context@v3
