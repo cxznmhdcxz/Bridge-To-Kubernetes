@@ -7,46 +7,42 @@ on:
 jobs:
   liveTest:
     env:
-      cluster: create-mac-2
+      maccluster: create-mac-3
+      wincluster: create-win-3
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     name: live test for b2k
     steps:
     - uses: actions/checkout@v2
     - name: Login Azure Context
       if: ${{ matrix.os != 'ubuntu-latest' }}
-      uses: Azure/login@v1
+      uses: azure/login@v1
       with:
         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
-    # todo: actually create an AKS
+    # create AKS cluster for windows
     - name: Create AKS for Windows
       if: ${{ matrix.os == 'windows-latest' }}
-      uses: Azure/powershell@v1
-      with:
-        inlineScript: |
-          az resource list -g ${{ secrets.AZURE_RESOURCE_GROUP }}
-        azPSVersion: '3.1.0'
+      run: |
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $wincluster --generate-ssh-keys
     - name: Set AKS Context for Windows
       if: ${{ matrix.os == 'windows-latest' }}
       uses: azure/aks-set-context@v3
       with:
-        # todo: set to the actually created AKS
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        cluster-name: testworkflow-aks
-    # todo: step:Create AKS for MacOS
+        cluster-name: ${{ env.wincluster }}
+    # create AKS cluster for MacOS
     - name: Create AKS mac
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $cluster --generate-ssh-keys
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $maccluster --generate-ssh-keys
     - name: Set AKS Context for MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/aks-set-context@v3
       with:
-        # todo: set to the actually created AKS
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        cluster-name: ${{ env.cluster }}
+        cluster-name: ${{ env.maccluster }}
     - name: Setup kubectl for macos-latest
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/setup-kubectl@v3
