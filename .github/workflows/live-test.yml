@@ -7,7 +7,7 @@ on:
 jobs:
   liveTest:
     env:
-      cluster: create-mac-1
+      cluster: create-mac-2
     strategy:
       matrix:
         os: [macos-latest]
@@ -46,7 +46,7 @@ jobs:
       with:
         # todo: set to the actually created AKS
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        cluster-name: $cluster
+        cluster-name: ${{ env.cluster }}
     - name: Setup kubectl for macos-latest
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/setup-kubectl@v3
