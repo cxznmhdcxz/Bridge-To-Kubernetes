@@ -7,7 +7,7 @@ on:
 jobs:
   liveTest:
     env:
-      cluster-name: create-mac-1
+      cluster: create-mac-1
     strategy:
       matrix:
         os: [macos-latest]
@@ -39,7 +39,7 @@ jobs:
     - name: Create AKS mac
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $cluster-name
+        az aks create -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n $cluster
     - name: Set AKS Context for MacOS
       if: ${{ matrix.os == 'macos-latest' }}
       uses: azure/aks-set-context@v3
