@@ -1,3 +1,4 @@
+# hello foo bar
 name: Live tests for B2K
 on:
   repository_dispatch:
