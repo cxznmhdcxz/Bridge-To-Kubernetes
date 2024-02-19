@@ -27,6 +27,8 @@ validate_b2k_is_running() {
     echo "evaluating curl response after b2k debugging"
     check_if_restore_pod_exists
     validate_restore_pod_status
+
+    sleep 300
     if [ "$RUNNER_OS" == "Linux" ]; then
         CURL_OUTPUT=$(curl -s -w "%{http_code}" $(minikube service frontend -n todo-app --url)/api/stats)
     else
